@@ -1,0 +1,37 @@
+{
+  "name": "docker-app-LangFlow",
+  "version": "1.0.0",
+  "description": "A Dockerized application for LangFlow, simplifying deployment and management.",
+  "main": "index.js",
+  "scripts": {
+    "start": "docker-compose up --build",
+    "commit-docker-image": "docker-compose build; bash ./docker-build/image/commit-docker-image.sh",
+    "d0.build": "docker-compose build",
+    "d1.bash": "docker-compose run app bash",
+    "tag": "./build/tag.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://pulipuli.chen@gmail.com@github.com/pulipulichen/docker-app-LangFlow.git"
+  },
+  "keywords": [
+    "Docker-APP",
+    "LangFlow",
+    "NextCloud"
+  ],
+  "author": {
+    "name": "Yung-Ting Chen",
+    "email": "blog@pulipuli.info",
+    "orcid": "https://orcid.org/0000-0003-3751-610X",
+    "url": "https://blog.pulipuli.info"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pulipulichen/docker-app-LangFlow/issues"
+  },
+  "homepage": "https://github.com/pulipulichen/docker-app-LangFlow#readme",
+  "devDependencies": {
+  },
+  "dependencies": {
+  }
+}
