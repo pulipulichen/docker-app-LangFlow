@@ -4,7 +4,7 @@
   "description": "A Dockerized application for LangFlow, simplifying deployment and management.",
   "main": "index.js",
   "scripts": {
-    "start": "docker-compose up --build",
+    "start": "docker-compose down; docker-compose up --build --remove-orphans",
     "d0.build": "docker-compose build",
     "d1.bash": "docker-compose run langflow bash",
     "commit-docker-image": "docker-compose build; bash ./docker-build/image/commit-docker-image.sh",
