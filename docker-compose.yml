@@ -14,8 +14,7 @@ services:
       - LANGFLOW_DATABASE_URL=postgresql://langflow:langflow@postgres:5432/langflow
       # This variable defines where the logs, file storage, monitor data and secret keys are stored.
     volumes:
-      - ./cache/langflow/data:/app/langflow
-      - ./cache/langflow/chroma_db:/app/chroma_db
+      - ./cache/langflow/data:/var/lib/langflow
       #- ./build/langflow/custom_components:/app/custom_components
       - ${DATA_PATH}:/data
     networks:
