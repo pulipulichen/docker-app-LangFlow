@@ -88,7 +88,16 @@ services:
     networks:
       langflow_network:
         ipv4_address: 10.5.0.5
-  
+  data_watcher:
+    build:
+      context: ./build/data_watcher
+    container_name: data_watcher
+    volumes:
+      - ./build/data_watcher/app:/app
+    networks:
+      langflow_network:
+        ipv4_address: 10.5.0.6
+
 networks:
   langflow_network:
     driver: bridge
