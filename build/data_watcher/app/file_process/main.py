@@ -47,6 +47,8 @@ def display_file_content(file_path, is_init):
         file_path (str): The path to the file.
         is_init (bool): Flag indicating whether this is the initial conversion process.
     """
+    # print(f"display_file_content: {file_path} {is_init}")
+
     if not os.path.isfile(file_path):
         print(f"Error: The provided path '{file_path}' is not a valid file.")
         return

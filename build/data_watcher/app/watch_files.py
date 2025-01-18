@@ -25,6 +25,9 @@ class FileChangeHandler(FileSystemEventHandler):
         if file_path == self.last_modified_file:
             return
 
+        if os.path.isfile(file_path) is False:
+            return
+
         if file_path.startswith('.') or os.path.basename(file_path).startswith('.'):
             print(f"Path or file name starts with '.', excluding it.")
             return
@@ -57,23 +60,22 @@ class FileChangeHandler(FileSystemEventHandler):
                 if time.time() - last_modified_time >= DELAY:
                     print(f"File {file_path} has not changed for {DELAY} seconds.")
                     # subprocess.run(["python3", "file_process/main.py", file_path, "false"])
-                    display_file_content(file_path, "false")
+                    display_file_content(file_path, False)
                     self.last_modified_file = file_path
                     break
             else:
                 last_modified_time = current_modified_time
 
-
 if __name__ == "__main__":
     # Ensure the current working directory is set correctly
-    os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    subprocess.run(["./watch_files_init.sh"])
+    # os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    # subprocess.run(["./watch_files_init.sh"])
 
     # Set up watchdog observer
     event_handler = FileChangeHandler()
     observer = Observer()
     observer.schedule(event_handler, WATCH_DIR, recursive=True)
-
+    
     print(f"Watching directory: {WATCH_DIR}")
     try:
         observer.start()

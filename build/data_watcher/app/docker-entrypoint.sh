@@ -7,5 +7,7 @@ cd "$(dirname "$0")"
 #./init_ingest_data.sh
 
 # Watch data for changes.
-python3 ./watch_index_folder.py &
-python3 ./watch_files.py
+# echo "python3 ./watch_index_folder.py"
+# python3 -u /app/watch_index_folder.py &
+echo "python3 /app/watch_files.py"
+python3 -u /app/watch_files.py
