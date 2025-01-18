@@ -22,14 +22,14 @@ class FileChangeHandler(FileSystemEventHandler):
 
     def handle_event(self, event):
         file_path = event.src_path
-        if file_path == self.last_modified_file:
-            return
+        # if file_path == self.last_modified_file:
+        #     return
 
         if os.path.isfile(file_path) is False:
             return
 
         if file_path.startswith('.') or os.path.basename(file_path).startswith('.'):
-            print(f"Path or file name starts with '.', excluding it.")
+            # print(f"Path or file name starts with '.', excluding it.")
             return
 
         print(f"Detected change in: {file_path}")

@@ -1,0 +1,928 @@
+{
+  "id": "ac0121ac-ada7-47d1-8aab-7253349b8d4e",
+  "data": {
+    "nodes": [
+      {
+        "id": "SplitText-WK7WO",
+        "type": "genericNode",
+        "position": {
+          "x": 1959.6460181063808,
+          "y": 1184.193572989907
+        },
+        "data": {
+          "description": "Split text into chunks based on specified criteria.",
+          "display_name": "Split Text",
+          "id": "SplitText-WK7WO",
+          "node": {
+            "template": {
+              "_type": "Component",
+              "data_inputs": {
+                "trace_as_metadata": true,
+                "list": true,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "data_inputs",
+                "value": "",
+                "display_name": "Data Inputs",
+                "advanced": false,
+                "input_types": [
+                  "Data"
+                ],
+                "dynamic": false,
+                "info": "The data to split.",
+                "title_case": false,
+                "type": "other",
+                "_input_type": "HandleInput"
+              },
+              "chunk_overlap": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "chunk_overlap",
+                "value": 200,
+                "display_name": "Chunk Overlap",
+                "advanced": false,
+                "dynamic": false,
+                "info": "Number of characters to overlap between chunks.",
+                "title_case": false,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "chunk_size": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "chunk_size",
+                "value": 1000,
+                "display_name": "Chunk Size",
+                "advanced": false,
+                "dynamic": false,
+                "info": "The maximum number of characters in each chunk.",
+                "title_case": false,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "from langchain_text_splitters import CharacterTextSplitter\n\nfrom langflow.custom import Component\nfrom langflow.io import HandleInput, IntInput, MessageTextInput, Output\nfrom langflow.schema import Data\nfrom langflow.utils.util import unescape_string\n\nimport os\n\nclass SplitTextComponent(Component):\n    display_name: str = \"Split Text\"\n    description: str = \"Split text into chunks based on specified criteria.\"\n    icon = \"scissors-line-dashed\"\n    name = \"SplitText\"\n    \n    LANGFLOW_INGEST_CHUNK_OVERLAP = os.getenv('LANGFLOW_INGEST_CHUNK_OVERLAP')\n    if LANGFLOW_INGEST_CHUNK_OVERLAP is None:\n        LANGFLOW_INGEST_CHUNK_OVERLAP = 200\n    else:\n        LANGFLOW_INGEST_CHUNK_OVERLAP = int(LANGFLOW_INGEST_CHUNK_OVERLAP)\n        \n    LANGFLOW_INGEST_CHUNK_SIZE = os.getenv('LANGFLOW_INGEST_CHUNK_SIZE')\n    if LANGFLOW_INGEST_CHUNK_SIZE is None:\n        LANGFLOW_INGEST_CHUNK_SIZE = 1000\n    else:\n        LANGFLOW_INGEST_CHUNK_SIZE = int(LANGFLOW_INGEST_CHUNK_SIZE)\n        \n    LANGFLOW_INGEST_SEPARATOR = os.getenv('LANGFLOW_INGEST_SEPARATOR')\n    if LANGFLOW_INGEST_SEPARATOR is None:\n        LANGFLOW_INGEST_SEPARATOR = \"\\n\"\n\n    inputs = [\n        HandleInput(\n            name=\"data_inputs\",\n            display_name=\"Data Inputs\",\n            info=\"The data to split.\",\n            input_types=[\"Data\"],\n            is_list=True,\n        ),\n        IntInput(\n            name=\"chunk_overlap\",\n            display_name=\"Chunk Overlap\",\n            info=\"Number of characters to overlap between chunks.\",\n            value=LANGFLOW_INGEST_CHUNK_OVERLAP,\n        ),\n        IntInput(\n            name=\"chunk_size\",\n            display_name=\"Chunk Size\",\n            info=\"The maximum number of characters in each chunk.\",\n            value=LANGFLOW_INGEST_CHUNK_SIZE,\n        ),\n        MessageTextInput(\n            name=\"separator\",\n            display_name=\"Separator\",\n            info=\"The character to split on. Defaults to newline.\",\n            value=LANGFLOW_INGEST_SEPARATOR,\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Chunks\", name=\"chunks\", method=\"split_text\"),\n    ]\n\n    def _docs_to_data(self, docs):\n        return [Data(text=doc.page_content, data=doc.metadata) for doc in docs]\n\n    def split_text(self) -> list[Data]:\n        separator = unescape_string(self.separator)\n\n        documents = [_input.to_lc_document() for _input in self.data_inputs if isinstance(_input, Data)]\n\n        splitter = CharacterTextSplitter(\n            chunk_overlap=self.chunk_overlap,\n            chunk_size=self.chunk_size,\n            separator=separator,\n        )\n        docs = splitter.split_documents(documents)\n        data = self._docs_to_data(docs)\n        self.status = data\n        return data\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "separator": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "separator",
+                "value": "\n",
+                "display_name": "Separator",
+                "advanced": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "The character to split on. Defaults to newline.",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              }
+            },
+            "description": "Split text into chunks based on specified criteria.",
+            "icon": "scissors-line-dashed",
+            "base_classes": [
+              "Data"
+            ],
+            "display_name": "Split Text",
+            "documentation": "",
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Data"
+                ],
+                "selected": "Data",
+                "name": "chunks",
+                "display_name": "Chunks",
+                "method": "split_text",
+                "value": "__UNDEFINED__",
+                "cache": true
+              }
+            ],
+            "field_order": [
+              "data_inputs",
+              "chunk_overlap",
+              "chunk_size",
+              "separator"
+            ],
+            "beta": false,
+            "legacy": false,
+            "edited": true,
+            "metadata": {},
+            "tool_mode": false
+          },
+          "type": "SplitText"
+        },
+        "selected": false,
+        "width": 320,
+        "height": 473,
+        "positionAbsolute": {
+          "x": 1959.6460181063808,
+          "y": 1184.193572989907
+        },
+        "dragging": false
+      },
+      {
+        "id": "Directory-lzoUo",
+        "type": "genericNode",
+        "position": {
+          "x": 1269.0704006803562,
+          "y": 1173.2891600792607
+        },
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "from langflow.base.data.utils import TEXT_FILE_TYPES, parallel_load_data, parse_text_file_to_data, retrieve_file_paths\nfrom langflow.custom import Component\nfrom langflow.io import BoolInput, IntInput, MessageTextInput\nfrom langflow.schema import Data\nfrom langflow.template import Output\n\n\nclass DirectoryComponent(Component):\n    display_name = \"Directory\"\n    description = \"Recursively load files from a directory.\"\n    icon = \"folder\"\n    name = \"Directory\"\n\n    inputs = [\n        MessageTextInput(\n            name=\"path\",\n            display_name=\"Path\",\n            info=\"Path to the directory to load files from.\",\n        ),\n        MessageTextInput(\n            name=\"types\",\n            display_name=\"Types\",\n            info=\"File types to load. Leave empty to load all default supported types.\",\n            is_list=True,\n        ),\n        IntInput(\n            name=\"depth\",\n            display_name=\"Depth\",\n            info=\"Depth to search for files.\",\n            value=0,\n        ),\n        IntInput(\n            name=\"max_concurrency\",\n            display_name=\"Max Concurrency\",\n            advanced=True,\n            info=\"Maximum concurrency for loading files.\",\n            value=2,\n        ),\n        BoolInput(\n            name=\"load_hidden\",\n            display_name=\"Load Hidden\",\n            advanced=True,\n            info=\"If true, hidden files will be loaded.\",\n        ),\n        BoolInput(\n            name=\"recursive\",\n            display_name=\"Recursive\",\n            advanced=True,\n            info=\"If true, the search will be recursive.\",\n        ),\n        BoolInput(\n            name=\"silent_errors\",\n            display_name=\"Silent Errors\",\n            advanced=True,\n            info=\"If true, errors will not raise an exception.\",\n        ),\n        BoolInput(\n            name=\"use_multithreading\",\n            display_name=\"Use Multithreading\",\n            advanced=True,\n            info=\"If true, multithreading will be used.\",\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Data\", name=\"data\", method=\"load_directory\"),\n    ]\n\n    def load_directory(self) -> list[Data]:\n        path = self.path\n        types = (\n            self.types if self.types and self.types != [\"\"] else TEXT_FILE_TYPES\n        )  # self.types is already a list due to is_list=True\n        depth = self.depth\n        max_concurrency = self.max_concurrency\n        load_hidden = self.load_hidden\n        recursive = self.recursive\n        silent_errors = self.silent_errors\n        use_multithreading = self.use_multithreading\n\n        resolved_path = self.resolve_path(path)\n        file_paths = retrieve_file_paths(\n            resolved_path, load_hidden=load_hidden, recursive=recursive, depth=depth, types=types\n        )\n\n        if types:\n            file_paths = [fp for fp in file_paths if any(fp.endswith(ext) for ext in types)]\n\n        loaded_data = []\n\n        if use_multithreading:\n            loaded_data = parallel_load_data(file_paths, silent_errors=silent_errors, max_concurrency=max_concurrency)\n        else:\n            loaded_data = [parse_text_file_to_data(file_path, silent_errors=silent_errors) for file_path in file_paths]\n        loaded_data = list(filter(None, loaded_data))\n        self.status = loaded_data\n        return loaded_data  # type: ignore[return-value]\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "depth": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "depth",
+                "value": 10,
+                "display_name": "Depth",
+                "advanced": false,
+                "dynamic": false,
+                "info": "Depth to search for files.",
+                "title_case": false,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "load_hidden": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "load_hidden",
+                "value": false,
+                "display_name": "Load Hidden",
+                "advanced": true,
+                "dynamic": false,
+                "info": "If true, hidden files will be loaded.",
+                "title_case": false,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "max_concurrency": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "max_concurrency",
+                "value": 2,
+                "display_name": "Max Concurrency",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Maximum concurrency for loading files.",
+                "title_case": false,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "path": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "path",
+                "value": "/data_index/",
+                "display_name": "Path",
+                "advanced": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Path to the directory to load files from.",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "recursive": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "recursive",
+                "value": false,
+                "display_name": "Recursive",
+                "advanced": true,
+                "dynamic": false,
+                "info": "If true, the search will be recursive.",
+                "title_case": false,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "silent_errors": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "silent_errors",
+                "value": false,
+                "display_name": "Silent Errors",
+                "advanced": true,
+                "dynamic": false,
+                "info": "If true, errors will not raise an exception.",
+                "title_case": false,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "types": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": true,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "types",
+                "value": [
+                  "md"
+                ],
+                "display_name": "Types",
+                "advanced": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "File types to load. Leave empty to load all default supported types.",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "use_multithreading": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "use_multithreading",
+                "value": false,
+                "display_name": "Use Multithreading",
+                "advanced": true,
+                "dynamic": false,
+                "info": "If true, multithreading will be used.",
+                "title_case": false,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              }
+            },
+            "description": "Recursively load files from a directory.",
+            "icon": "folder",
+            "base_classes": [
+              "Data"
+            ],
+            "display_name": "Directory",
+            "documentation": "",
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Data"
+                ],
+                "selected": "Data",
+                "name": "data",
+                "display_name": "Data",
+                "method": "load_directory",
+                "value": "__UNDEFINED__",
+                "cache": true
+              }
+            ],
+            "field_order": [
+              "path",
+              "types",
+              "depth",
+              "max_concurrency",
+              "load_hidden",
+              "recursive",
+              "silent_errors",
+              "use_multithreading"
+            ],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {},
+            "tool_mode": false,
+            "lf_version": "1.1.1"
+          },
+          "type": "Directory",
+          "id": "Directory-lzoUo"
+        },
+        "selected": false,
+        "width": 320,
+        "height": 405,
+        "positionAbsolute": {
+          "x": 1269.0704006803562,
+          "y": 1173.2891600792607
+        },
+        "dragging": false
+      },
+      {
+        "id": "Chroma-I8xFt",
+        "type": "genericNode",
+        "position": {
+          "x": 2459.6808986522115,
+          "y": 1254.31606559317
+        },
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "embedding": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "embedding",
+                "value": "",
+                "display_name": "Embedding",
+                "advanced": false,
+                "input_types": [
+                  "Embeddings"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "type": "other",
+                "_input_type": "HandleInput"
+              },
+              "ingest_data": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": true,
+                "trace_as_input": true,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "ingest_data",
+                "value": "",
+                "display_name": "Ingest Data",
+                "advanced": false,
+                "input_types": [
+                  "Data"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "type": "other",
+                "_input_type": "DataInput"
+              },
+              "allow_duplicates": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "allow_duplicates",
+                "value": false,
+                "display_name": "Allow Duplicates",
+                "advanced": true,
+                "dynamic": false,
+                "info": "If false, will not add documents that are already in the Vector Store.",
+                "title_case": false,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "chroma_server_cors_allow_origins": {
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "chroma_server_cors_allow_origins",
+                "value": "",
+                "display_name": "Server CORS Allow Origins",
+                "advanced": true,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "StrInput"
+              },
+              "chroma_server_grpc_port": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "chroma_server_grpc_port",
+                "value": "",
+                "display_name": "Server gRPC Port",
+                "advanced": true,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "chroma_server_host": {
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "chroma_server_host",
+                "value": "",
+                "display_name": "Server Host",
+                "advanced": true,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "StrInput"
+              },
+              "chroma_server_http_port": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "chroma_server_http_port",
+                "value": "",
+                "display_name": "Server HTTP Port",
+                "advanced": true,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "chroma_server_ssl_enabled": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "chroma_server_ssl_enabled",
+                "value": false,
+                "display_name": "Server SSL Enabled",
+                "advanced": true,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "from copy import deepcopy\n\nfrom chromadb.config import Settings\nfrom langchain_chroma import Chroma\nfrom loguru import logger\n\nfrom langflow.base.vectorstores.model import LCVectorStoreComponent, check_cached_vector_store\nfrom langflow.base.vectorstores.utils import chroma_collection_to_data\nfrom langflow.io import BoolInput, DataInput, DropdownInput, HandleInput, IntInput, MultilineInput, StrInput\nfrom langflow.schema import Data\n\nimport chromadb\n\nclass ChromaVectorStoreComponent(LCVectorStoreComponent):\n    \"\"\"Chroma Vector Store with search capabilities.\"\"\"\n\n    display_name: str = \"Chroma DB\"\n    description: str = \"Chroma Vector Store with search capabilities\"\n    documentation = \"https://python.langchain.com/docs/integrations/vectorstores/chroma\"\n    name = \"Chroma\"\n    icon = \"Chroma\"\n\n    inputs = [\n        StrInput(\n            name=\"collection_name\",\n            display_name=\"Collection Name\",\n            value=\"langflow\",\n        ),\n        StrInput(\n            name=\"persist_directory\",\n            display_name=\"Persist Directory\",\n        ),\n        MultilineInput(\n            name=\"search_query\",\n            display_name=\"Search Query\",\n        ),\n        DataInput(\n            name=\"ingest_data\",\n            display_name=\"Ingest Data\",\n            is_list=True,\n        ),\n        HandleInput(name=\"embedding\", display_name=\"Embedding\", input_types=[\"Embeddings\"]),\n        StrInput(\n            name=\"chroma_server_cors_allow_origins\",\n            display_name=\"Server CORS Allow Origins\",\n            advanced=True,\n        ),\n        StrInput(\n            name=\"chroma_server_host\",\n            display_name=\"Server Host\",\n            advanced=True,\n        ),\n        IntInput(\n            name=\"chroma_server_http_port\",\n            display_name=\"Server HTTP Port\",\n            advanced=True,\n        ),\n        IntInput(\n            name=\"chroma_server_grpc_port\",\n            display_name=\"Server gRPC Port\",\n            advanced=True,\n        ),\n        BoolInput(\n            name=\"chroma_server_ssl_enabled\",\n            display_name=\"Server SSL Enabled\",\n            advanced=True,\n        ),\n        BoolInput(\n            name=\"allow_duplicates\",\n            display_name=\"Allow Duplicates\",\n            advanced=True,\n            info=\"If false, will not add documents that are already in the Vector Store.\",\n        ),\n        DropdownInput(\n            name=\"search_type\",\n            display_name=\"Search Type\",\n            options=[\"Similarity\", \"MMR\"],\n            value=\"Similarity\",\n            advanced=True,\n        ),\n        IntInput(\n            name=\"number_of_results\",\n            display_name=\"Number of Results\",\n            info=\"Number of results to return.\",\n            advanced=True,\n            value=10,\n        ),\n        IntInput(\n            name=\"limit\",\n            display_name=\"Limit\",\n            advanced=True,\n            info=\"Limit the number of records to compare when Allow Duplicates is False.\",\n        ),\n    ]\n\n    @check_cached_vector_store\n    def build_vector_store(self) -> Chroma:\n        \"\"\"Builds the Chroma object.\"\"\"\n        try:\n            from chromadb import Client\n            from langchain_chroma import Chroma\n        except ImportError as e:\n            msg = \"Could not import Chroma integration package. Please install it with `pip install langchain-chroma`.\"\n            raise ImportError(msg) from e\n        # Chroma settings\n        chroma_settings = None\n        client = None\n        if self.chroma_server_host:\n            chroma_settings = Settings(\n                chroma_server_cors_allow_origins=self.chroma_server_cors_allow_origins or [],\n                chroma_server_host=self.chroma_server_host,\n                chroma_server_http_port=self.chroma_server_http_port or None,\n                chroma_server_grpc_port=self.chroma_server_grpc_port or None,\n                chroma_server_ssl_enabled=self.chroma_server_ssl_enabled,\n            )\n            client = Client(settings=chroma_settings)\n\n        # Check persist_directory and expand it if it is a relative path\n        persist_directory = self.resolve_path(self.persist_directory) if self.persist_directory is not None else None\n\n        # ===================\n        \n        # List all collections\n        persistent_client = chromadb.PersistentClient(path=self.persist_directory)\n        collections = persistent_client.list_collections()\n        \n        # Check if the 'test' collection exists\n        collection_names = [collection.name for collection in collections]\n        \n        if self.collection_name in collection_names:\n            persistent_client.delete_collection(self.collection_name)\n            \n        # =====================\n\n        chroma = Chroma(\n            persist_directory=persist_directory,\n            client=client,\n            embedding_function=self.embedding,\n            collection_name=self.collection_name,\n        )\n\n        self._add_documents_to_vector_store(chroma)\n        self.status = chroma_collection_to_data(chroma.get(limit=self.limit))\n        return chroma\n\n    def _add_documents_to_vector_store(self, vector_store: \"Chroma\") -> None:\n        \"\"\"Adds documents to the Vector Store.\"\"\"\n        if not self.ingest_data:\n            self.status = \"\"\n            return\n\n        _stored_documents_without_id = []\n        if self.allow_duplicates:\n            stored_data = []\n        else:\n            stored_data = chroma_collection_to_data(vector_store.get(limit=self.limit))\n            for value in deepcopy(stored_data):\n                del value.id\n                _stored_documents_without_id.append(value)\n\n        documents = []\n        for _input in self.ingest_data or []:\n            if isinstance(_input, Data):\n                if _input not in _stored_documents_without_id:\n                    documents.append(_input.to_lc_document())\n            else:\n                msg = \"Vector Store Inputs must be Data objects.\"\n                raise TypeError(msg)\n\n        if documents and self.embedding is not None:\n            logger.debug(f\"Adding {len(documents)} documents to the Vector Store.\")\n            vector_store.add_documents(documents)\n        else:\n            logger.debug(\"No documents to add to the Vector Store.\")\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "collection_name": {
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "collection_name",
+                "value": "langflow",
+                "display_name": "Collection Name",
+                "advanced": false,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "StrInput"
+              },
+              "limit": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "limit",
+                "value": "",
+                "display_name": "Limit",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Limit the number of records to compare when Allow Duplicates is False.",
+                "title_case": false,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "number_of_results": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "number_of_results",
+                "value": 10,
+                "display_name": "Number of Results",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Number of results to return.",
+                "title_case": false,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "persist_directory": {
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "persist_directory",
+                "value": "chroma_db",
+                "display_name": "Persist Directory",
+                "advanced": false,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "StrInput"
+              },
+              "search_query": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "multiline": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "search_query",
+                "value": "",
+                "display_name": "Search Query",
+                "advanced": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "MultilineInput"
+              },
+              "search_type": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "Similarity",
+                  "MMR"
+                ],
+                "combobox": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "search_type",
+                "value": "Similarity",
+                "display_name": "Search Type",
+                "advanced": true,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "DropdownInput"
+              }
+            },
+            "description": "Chroma Vector Store with search capabilities",
+            "icon": "Chroma",
+            "base_classes": [
+              "Data",
+              "Retriever"
+            ],
+            "display_name": "Chroma DB",
+            "documentation": "https://python.langchain.com/docs/integrations/vectorstores/chroma",
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Retriever"
+                ],
+                "selected": "Retriever",
+                "name": "base_retriever",
+                "display_name": "Retriever",
+                "method": "build_base_retriever",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "required_inputs": []
+              },
+              {
+                "types": [
+                  "Data"
+                ],
+                "selected": "Data",
+                "name": "search_results",
+                "display_name": "Search Results",
+                "method": "search_documents",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "required_inputs": []
+              }
+            ],
+            "field_order": [
+              "collection_name",
+              "persist_directory",
+              "search_query",
+              "ingest_data",
+              "embedding",
+              "chroma_server_cors_allow_origins",
+              "chroma_server_host",
+              "chroma_server_http_port",
+              "chroma_server_grpc_port",
+              "chroma_server_ssl_enabled",
+              "allow_duplicates",
+              "search_type",
+              "number_of_results",
+              "limit"
+            ],
+            "beta": false,
+            "legacy": false,
+            "edited": true,
+            "metadata": {},
+            "tool_mode": false,
+            "lf_version": "1.1.1"
+          },
+          "type": "Chroma",
+          "id": "Chroma-I8xFt"
+        },
+        "selected": false,
+        "width": 320,
+        "height": 549,
+        "dragging": false
+      },
+      {
+        "id": "Google Generative AI Embeddings-eCKFP",
+        "type": "genericNode",
+        "position": {
+          "x": 1504.9919708795785,
+          "y": 1773.9376121085065
+        },
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "# from langflow.field_typing import Data\nimport numpy as np\n\n# TODO: remove ignore once the google package is published with types\nfrom google.ai.generativelanguage_v1beta.types import BatchEmbedContentsRequest\nfrom langchain_core.embeddings import Embeddings\nfrom langchain_google_genai import GoogleGenerativeAIEmbeddings\nfrom langchain_google_genai._common import GoogleGenerativeAIError\n\nfrom langflow.custom import Component\nfrom langflow.io import MessageTextInput, Output, SecretStrInput\n\nimport os\n\nclass GoogleGenerativeAIEmbeddingsComponent(Component):\n    display_name = \"Google Generative AI Embeddings\"\n    description = (\n        \"Connect to Google's generative AI embeddings service using the GoogleGenerativeAIEmbeddings class, \"\n        \"found in the langchain-google-genai package.\"\n    )\n    documentation: str = \"https://python.langchain.com/v0.2/docs/integrations/text_embedding/google_generative_ai/\"\n    icon = \"Google\"\n    name = \"Google Generative AI Embeddings\"\n\n    inputs = [\n        #SecretStrInput(name=\"api_key\", display_name=\"API Key\"),\n        MessageTextInput(name=\"model_name\", display_name=\"Model Name\", value=\"models/text-embedding-004\"),\n    ]\n\n    outputs = [\n        Output(display_name=\"Embeddings\", name=\"embeddings\", method=\"build_embeddings\"),\n    ]\n\n    def build_embeddings(self) -> Embeddings:\n        # if not self.api_key:\n        #     msg = \"API Key is required\"\n        #     raise ValueError(msg)\n\n        class HotaGoogleGenerativeAIEmbeddings(GoogleGenerativeAIEmbeddings):\n            def __init__(self, *args, **kwargs) -> None:\n                super(GoogleGenerativeAIEmbeddings, self).__init__(*args, **kwargs)\n\n            def embed_documents(\n                self,\n                texts: list[str],\n                *,\n                batch_size: int = 100,\n                task_type: str | None = None,\n                titles: list[str] | None = None,\n                output_dimensionality: int | None = 1536,\n            ) -> list[list[float]]:\n                \"\"\"Embed a list of strings.\n\n                Google Generative AI currently sets a max batch size of 100 strings.\n\n                Args:\n                    texts: List[str] The list of strings to embed.\n                    batch_size: [int] The batch size of embeddings to send to the model\n                    task_type: task_type (https://ai.google.dev/api/rest/v1/TaskType)\n                    titles: An optional list of titles for texts provided.\n                    Only applicable when TaskType is RETRIEVAL_DOCUMENT.\n                    output_dimensionality: Optional reduced dimension for the output embedding.\n                    https://ai.google.dev/api/rest/v1/models/batchEmbedContents#EmbedContentRequest\n                Returns:\n                    List of embeddings, one for each text.\n                \"\"\"\n                embeddings: list[list[float]] = []\n                batch_start_index = 0\n                for batch in GoogleGenerativeAIEmbeddings._prepare_batches(texts, batch_size):\n                    if titles:\n                        titles_batch = titles[batch_start_index : batch_start_index + len(batch)]\n                        batch_start_index += len(batch)\n                    else:\n                        titles_batch = [None] * len(batch)  # type: ignore[list-item]\n\n                    requests = [\n                        self._prepare_request(\n                            text=text,\n                            task_type=task_type,\n                            title=title,\n                            output_dimensionality=output_dimensionality,\n                        )\n                        for text, title in zip(batch, titles_batch, strict=True)\n                    ]\n\n                    try:\n                        result = self.client.batch_embed_contents(\n                            BatchEmbedContentsRequest(requests=requests, model=self.model)\n                        )\n                    except Exception as e:\n                        msg = f\"Error embedding content: {e}\"\n                        raise GoogleGenerativeAIError(msg) from e\n                    embeddings.extend([list(np.pad(e.values, (0, 768), \"constant\")) for e in result.embeddings])\n                return embeddings\n\n            def embed_query(\n                self,\n                text: str,\n                task_type: str | None = None,\n                title: str | None = None,\n                output_dimensionality: int | None = 1536,\n            ) -> list[float]:\n                \"\"\"Embed a text.\n\n                Args:\n                    text: The text to embed.\n                    task_type: task_type (https://ai.google.dev/api/rest/v1/TaskType)\n                    title: An optional title for the text.\n                    Only applicable when TaskType is RETRIEVAL_DOCUMENT.\n                    output_dimensionality: Optional reduced dimension for the output embedding.\n                    https://ai.google.dev/api/rest/v1/models/batchEmbedContents#EmbedContentRequest\n\n                Returns:\n                    Embedding for the text.\n                \"\"\"\n                task_type = task_type or \"RETRIEVAL_QUERY\"\n                return self.embed_documents(\n                    [text],\n                    task_type=task_type,\n                    titles=[title] if title else None,\n                    output_dimensionality=output_dimensionality,\n                )[0]\n\n        return HotaGoogleGenerativeAIEmbeddings(model=self.model_name, google_api_key=os.getenv('GEMINI_API_KEY'))\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "model_name": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "model_name",
+                "value": "models/text-embedding-004",
+                "display_name": "Model Name",
+                "advanced": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              }
+            },
+            "description": "Connect to Google's generative AI embeddings service using the GoogleGenerativeAIEmbeddings class, found in the langchain-google-genai package.",
+            "icon": "Google",
+            "base_classes": [
+              "Embeddings"
+            ],
+            "display_name": "Google Generative AI Embeddings",
+            "documentation": "https://python.langchain.com/v0.2/docs/integrations/text_embedding/google_generative_ai/",
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Embeddings"
+                ],
+                "selected": "Embeddings",
+                "name": "embeddings",
+                "display_name": "Embeddings",
+                "method": "build_embeddings",
+                "value": "__UNDEFINED__",
+                "cache": true
+              }
+            ],
+            "field_order": [
+              "model_name"
+            ],
+            "beta": false,
+            "legacy": false,
+            "edited": true,
+            "metadata": {},
+            "tool_mode": false
+          },
+          "type": "Google Generative AI Embeddings",
+          "id": "Google Generative AI Embeddings-eCKFP"
+        },
+        "selected": false,
+        "width": 320,
+        "height": 293,
+        "positionAbsolute": {
+          "x": 1504.9919708795785,
+          "y": 1773.9376121085065
+        },
+        "dragging": false
+      }
+    ],
+    "edges": [
+      {
+        "source": "SplitText-WK7WO",
+        "target": "Chroma-I8xFt",
+        "sourceHandle": "{œdataTypeœ:œSplitTextœ,œidœ:œSplitText-WK7WOœ,œnameœ:œchunksœ,œoutput_typesœ:[œDataœ]}",
+        "targetHandle": "{œfieldNameœ:œingest_dataœ,œidœ:œChroma-I8xFtœ,œinputTypesœ:[œDataœ],œtypeœ:œotherœ}",
+        "id": "reactflow__edge-SplitText-WK7WO{œdataTypeœ:œSplitTextœ,œidœ:œSplitText-WK7WOœ,œnameœ:œchunksœ,œoutput_typesœ:[œDataœ]}-Chroma-I8xFt{œfieldNameœ:œingest_dataœ,œidœ:œChroma-I8xFtœ,œinputTypesœ:[œDataœ],œtypeœ:œotherœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "ingest_data",
+            "id": "Chroma-I8xFt",
+            "inputTypes": [
+              "Data"
+            ],
+            "type": "other"
+          },
+          "sourceHandle": {
+            "dataType": "SplitText",
+            "id": "SplitText-WK7WO",
+            "name": "chunks",
+            "output_types": [
+              "Data"
+            ]
+          }
+        },
+        "selected": false,
+        "className": "",
+        "animated": true
+      },
+      {
+        "source": "Google Generative AI Embeddings-eCKFP",
+        "sourceHandle": "{œdataTypeœ:œGoogle Generative AI Embeddingsœ,œidœ:œGoogle Generative AI Embeddings-eCKFPœ,œnameœ:œembeddingsœ,œoutput_typesœ:[œEmbeddingsœ]}",
+        "target": "Chroma-I8xFt",
+        "targetHandle": "{œfieldNameœ:œembeddingœ,œidœ:œChroma-I8xFtœ,œinputTypesœ:[œEmbeddingsœ],œtypeœ:œotherœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "embedding",
+            "id": "Chroma-I8xFt",
+            "inputTypes": [
+              "Embeddings"
+            ],
+            "type": "other"
+          },
+          "sourceHandle": {
+            "dataType": "Google Generative AI Embeddings",
+            "id": "Google Generative AI Embeddings-eCKFP",
+            "name": "embeddings",
+            "output_types": [
+              "Embeddings"
+            ]
+          }
+        },
+        "id": "reactflow__edge-Google Generative AI Embeddings-eCKFP{œdataTypeœ:œGoogle Generative AI Embeddingsœ,œidœ:œGoogle Generative AI Embeddings-eCKFPœ,œnameœ:œembeddingsœ,œoutput_typesœ:[œEmbeddingsœ]}-Chroma-I8xFt{œfieldNameœ:œembeddingœ,œidœ:œChroma-I8xFtœ,œinputTypesœ:[œEmbeddingsœ],œtypeœ:œotherœ}",
+        "className": "",
+        "animated": false,
+        "selected": false
+      },
+      {
+        "source": "Directory-lzoUo",
+        "sourceHandle": "{œdataTypeœ:œDirectoryœ,œidœ:œDirectory-lzoUoœ,œnameœ:œdataœ,œoutput_typesœ:[œDataœ]}",
+        "target": "SplitText-WK7WO",
+        "targetHandle": "{œfieldNameœ:œdata_inputsœ,œidœ:œSplitText-WK7WOœ,œinputTypesœ:[œDataœ],œtypeœ:œotherœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "data_inputs",
+            "id": "SplitText-WK7WO",
+            "inputTypes": [
+              "Data"
+            ],
+            "type": "other"
+          },
+          "sourceHandle": {
+            "dataType": "Directory",
+            "id": "Directory-lzoUo",
+            "name": "data",
+            "output_types": [
+              "Data"
+            ]
+          }
+        },
+        "id": "reactflow__edge-Directory-lzoUo{œdataTypeœ:œDirectoryœ,œidœ:œDirectory-lzoUoœ,œnameœ:œdataœ,œoutput_typesœ:[œDataœ]}-SplitText-WK7WO{œfieldNameœ:œdata_inputsœ,œidœ:œSplitText-WK7WOœ,œinputTypesœ:[œDataœ],œtypeœ:œotherœ}",
+        "className": "",
+        "selected": false
+      }
+    ],
+    "viewport": {
+      "x": -698.2299575250886,
+      "y": -725.7799721161057,
+      "zoom": 0.7525402564238926
+    }
+  },
+  "description": "Transform Your Business with Smart Dialogues.",
+  "name": "RAG Data Ingestion",
+  "last_tested_version": "1.1.1",
+  "endpoint_name": null,
+  "is_component": false
+}

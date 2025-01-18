@@ -1,5 +1,6 @@
 /\[trash
 .env
 cache
+test
 /data/*
 **/__pycache__/
