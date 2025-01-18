@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "docker-compose down; docker-compose up --build --remove-orphans",
-    "d0.build": "docker-compose build",
-    "d1.bash": "docker-compose run langflow bash",
+    "d0.build": "docker-compose down; docker-compose build",
+    "d1.bash": "docker-compose down; docker-compose run data_watcher bash",
     "commit-docker-image": "docker-compose build; bash ./docker-build/image/commit-docker-image.sh",
     "tag": "./build/tag.sh"
   },
